@@ -1,0 +1,242 @@
+<style>
+
+  .widget{
+    font-family: {{ block.settings.font_family }};
+    font-size: {{ block.settings.font_size }};
+    color: {{ block.settings.widget_text }};
+    width: 100%;
+    padding: 20px;
+    padding-bottom: 0px;
+    box-shadow: "0px 1px 4px";
+    border-radius: 5px;
+    text-align: left;
+  }
+
+  .user-label{
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+
+  .user-form{
+    display: flex;
+  }
+
+  .user-input{
+    font-family: {{ block.settings.font_family }};
+    font-size: {{ block.settings.font_size }};
+    border-color: {{ block.settings.outline }};
+    color: {{ block.settings.widget_text }};
+    width:100%;
+    padding: 15px;
+    margin: 2px;
+    border: 1px solid;
+    border-radius: 5px;
+    outline: none;
+  }
+
+  .user-input:focus{
+    box-shadow: none;
+  }
+
+  .user-button{
+    font-family: {{ block.settings.font_family }};
+    font-size: {{ block.settings.font_size }};
+    background-color: {{ block.settings.button_background }};
+    border-color: {{ block.settings.outline }};
+    color: {{ block.settings.button_text }};
+    padding: 15px;
+    margin: 2px;
+    border: 1px solid;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    white-space: nowrap;
+  }
+
+  .copy-right{
+    font-size: 11px;
+    text-align: right;
+  }
+
+  .response-widget{
+    font_family: {{ block.settings.font_family }};
+    font_size: {{ block.settings.font_size }};
+    color: {{ block.settings.result_text }};
+    padding: 10px;
+    text-align: left;
+    margin-top: 10px;
+    display: none;
+  }
+
+</style>
+
+<script>
+
+  let selected_variant = null;
+
+  const handleDeliveryPincodeUpdate = () => {
+    const destinationPincodeInput = document.getElementById("destination_pincode");
+    if (destinationPincodeInput) {
+      const pincodeValue = sessionStorage.getItem('delivery_pincode') || "";
+      destinationPincodeInput.value = pincodeValue;
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    handleDeliveryPincodeUpdate();
+  });
+
+  const handleEddWidgetUpdate = async (variant_id) => {
+    await fetch(`{{ shop.url }}/products/{{ product.handle }}?variant=${variant_id}`)
+      .then((response) => response.text())
+      .then((responseText) => {
+
+        const html = new DOMParser().parseFromString(responseText, 'text/html');
+        const eshipzEddNew = html.getElementById("predict_edd_widget_{{ section.id }}");
+        const eshipzEddExisting = document.getElementById("predict_edd_widget_{{ section.id }}");
+
+        const new_pincodes = eshipzEddNew.getAttribute('data-origin_pincodes');
+        const existing_pincodes = eshipzEddExisting.getAttribute('data-origin_pincodes');
+
+        if(new_pincodes !== existing_pincodes){
+          eshipzEddExisting.setAttribute('data-origin_pincodes', new_pincodes);
+          eshipzEddExisting.innerHTML = eshipzEddNew.innerHTML;
+        }
+
+      });
+  }
+
+  const handleDocumentUpdate = async (mutationsList, observer) => {
+
+    let existing_variant = "{{ product.selected_or_first_available_variant.id }}";
+    let new_variant = new URL(window.location.href).searchParams.get("variant");
+
+    if(new_variant && existing_variant !== new_variant){
+      selected_variant = new_variant;
+      await handleEddWidgetUpdate(selected_variant);
+      handleDeliveryPincodeUpdate();
+    } else if(( selected_variant !== null && selected_variant !== existing_variant)){
+      selected_variant = new_variant;
+      await handleEddWidgetUpdate(selected_variant);
+      handleDeliveryPincodeUpdate();
+    }
+
+  }
+
+  const observer = new MutationObserver(handleDocumentUpdate);
+  const config = { childList: true, subtree: true };
+  observer.observe(document, config);
+
+  const getDeliveryInfo = async (product_variant_id, origin_ids, origin_names, origin_pincodes) => {
+
+    // console.log('params : ', product_variant_id, origin_ids, origin_names, origin_pincodes);
+
+    origin_ids = origin_ids.split(',')
+    origin_names = origin_names.split(',')
+    origin_pincodes = origin_pincodes.split(',')
+
+    let resultDiv = document.getElementById("result");
+    let loadingDiv = document.getElementById("loader");
+    let errorDiv = document.getElementById("error");
+
+    resultDiv.style.display = "none";
+    loadingDiv.style.display = "none";
+    errorDiv.style.display = "none";
+
+    try{
+      let destination_pincode = document.getElementById('destination_pincode').value;
+      sessionStorage.setItem('delivery_pincode :', destination_pincode);
+
+      if(!destination_pincode || destination_pincode.toString().length != 6 || parseInt(destination_pincode) <= 0 || parseInt(destination_pincode) >= 1000000){
+        document.getElementById('error_response').innerHTML = `enter a valid pincode`;
+        errorDiv.style.display = "block";
+        setTimeout(function () {
+            errorDiv.style.display = "none";
+        }, 5000);
+        return;
+      } else {
+        loadingDiv.style.display = "block";
+
+        let headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        let body = JSON.stringify({ product_variant_id, destination_pincode, origin_ids, origin_names, origin_pincodes });
+        var requestOptions = { method: 'POST', headers, body, redirect: 'follow' };
+        response = await fetch('/apps/eshipz/edd', requestOptions);
+        response = await response.json()
+
+        let min_edd = response?.min_edd
+        let max_edd = response?.max_edd
+        let is_cod = response?.is_cod
+
+        if( min_edd && max_edd){
+          if(min_edd === max_edd){
+            document.getElementById('delivery_date').innerHTML = `on ${min_edd}.`;
+          } else {
+            document.getElementById('delivery_date').innerHTML = `between ${min_edd} and ${max_edd}.`;
+          }
+          document.getElementById('cod_status').innerHTML = `${is_cod ? "{{ block.settings.cod_available_prompt }}" : "{{ block.settings.cod_not_available_prompt }}"}`;
+
+          loadingDiv.style.display = "none";
+          resultDiv.style.display = "block";
+        } else {
+          document.getElementById('error_response').innerHTML = "{{ block.settings.error_prompt }}";
+          console.log('missing edd dates/cod status');
+          loadingDiv.style.display = "none";
+          resultDiv.style.display = "none";
+          errorDiv.style.display = "block";
+          setTimeout(function () {
+              errorDiv.style.display = "none";
+          }, 5000);
+        }
+
+      }
+
+  } catch (error){
+
+      console.log('error :', error);
+      document.getElementById('error_response').innerHTML = `Something went wrong, try again later.`;
+      loadingDiv.style.display = "none";
+      errorDiv.style.display = "block";
+
+  } finally {
+      if(errorDiv.style.display === "block") setTimeout(function () { errorDiv.style.display = "none"; }, 5000);
+  }
+
+  }
+
+</script>
+
+{% liquid
+    assign origin_pincodes = ''
+    if block.settings.default_origin != "-"
+        assign origin_pincodes = block.settings.default_origin
+    endif
+%}
+
+<main id="predict_edd_widget_{{ section.id }}" class="widget" data-origin_pincodes="{{ origin_pincodes }}" >
+
+  <label class="user-label"> {{ block.settings.label_prompt }} </label>
+
+  <section class="user-form">
+      <input type="text" id="destination_pincode" class="user-input" placeholder="{{ block.settings.input_placeholder_prompt }}" />
+      <button class="user-button" onclick="getDeliveryInfo('{{ product.selected_or_first_available_variant.id }}', '{{ origin_pincodes }}')" > {{ block.settings.button_prompt }} </button>
+  </section>
+
+  <section class="response-widget" id="loader">
+      Processing...
+  </section>
+
+  <section class="response-widget" id="result">
+      <p> {{ block.settings.delivery_date_prompt }} <span id="delivery_date"> ... </span> </p>
+      <p> <span id="cod_status"> </span> </p>
+  </section>
+
+  <section class="response-widget" id="error">
+      <span id="error_response"> </span>
+  </section>
+
+  <footer class="copy-right">
+      <span> <a href="https://eshipz.com/"> Powered by eShipz </a> </span>
+  </footer>
+
+</main>

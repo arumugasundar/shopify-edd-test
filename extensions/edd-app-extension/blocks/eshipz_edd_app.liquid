@@ -1,0 +1,39 @@
+{% render 'eshipz_edd_widget' %}
+
+
+{% schema %}
+{
+  "name": "Estimated Delivery Date",
+  "target": "section",
+  "settings": [
+    { "type": "text", "id": "default_origin", "label": "Primary pickup pincode", "default": "-", "info": "leave it as '-', if you are processing with multiple locations." },
+    { "type": "color", "id": "outline", "label": "Widget outline", "default": "#dcdcdc" },
+    { "type": "color", "id": "widget_text", "label": "Text colour", "default": "#333333" },
+    { "type": "color", "id": "button_background", "label": "Button colour", "default": " #52a1fa" },
+    { "type": "color", "id": "button_text", "label": "Button text colour", "default": " #333333" },
+    { "type": "color", "id": "result_text", "label": "Result text colour", "default": "#333333" },
+    { "type": "text", "id": "font_size", "label": "Font size", "default": "14px" },
+    {
+        "type": "select",
+        "id": "font_family",
+        "label": "Font family",
+        "options": [
+          { "value": "Arial, sans-serif", "label": "Arial" },
+          { "value": "Verdana, sans-serif", "label": "Verdana" },
+          { "value": "'Times New Roman', serif", "label": "Times New Roman" },
+          { "value": "'Courier New', monospace", "label": "Courier New" }
+        ],
+        "default": "Arial, sans-serif"
+    },
+    { "type": "text", "id": "label_prompt", "label": "Customer prompt", "default": "Delivery details"},
+    { "type": "text", "id": "input_placeholder_prompt", "label": "Pincode prompt", "default": "Enter your pincode"},
+    { "type": "text", "id": "button_prompt", "label": "Button text", "default": "check EDD"},
+    { "type": "text", "id": "delivery_date_prompt", "label": "EDD prompt", "default": "Expect your delivery "},
+
+    { "type": "text", "id": "cod_available_prompt", "label": "COD available prompt", "default": "COD Option is available"},
+    { "type": "text", "id": "cod_not_available_prompt", "label": "COD not available prompt", "default": "COD Option is not available"},
+
+    { "type": "text", "id": "error_prompt", "label": "Error prompt", "default": "edd not available"}
+   ]
+}
+{% endschema %}

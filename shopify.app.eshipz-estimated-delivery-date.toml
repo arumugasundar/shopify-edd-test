@@ -1,0 +1,29 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "3f58575b4ad9dbda03f6dbcd46d92f0b"
+name = "eShipz Estimated Delivery Date"
+handle = "eshipz-estimated-delivery-date"
+application_url = "https://arm-namespace-marketplace-equilibrium.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "eshipz-estimated-delivery-date.myshopify.com"
+include_config_on_deploy = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = ""
+
+[auth]
+redirect_urls = [
+  "https://arm-namespace-marketplace-equilibrium.trycloudflare.com/auth/callback",
+  "https://arm-namespace-marketplace-equilibrium.trycloudflare.com/auth/shopify/callback",
+  "https://arm-namespace-marketplace-equilibrium.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-01"
+
+[pos]
+embedded = false
