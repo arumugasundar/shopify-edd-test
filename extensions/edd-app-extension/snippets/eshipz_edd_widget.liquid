@@ -131,9 +131,9 @@
 
     // console.log('params : ', product_variant_id, origin_ids, origin_names, origin_pincodes);
 
-    origin_ids = origin_ids.split(',')
-    origin_names = origin_names.split(',')
-    origin_pincodes = origin_pincodes.split(',')
+    origin_ids = origin_ids?.split(',')
+    origin_names = origin_names?.split(',')
+    origin_pincodes = origin_pincodes?.split(',')
 
     let resultDiv = document.getElementById("result");
     let loadingDiv = document.getElementById("loader");
