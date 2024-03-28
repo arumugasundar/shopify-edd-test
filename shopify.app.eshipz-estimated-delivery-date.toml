@@ -3,7 +3,7 @@
 client_id = "3f58575b4ad9dbda03f6dbcd46d92f0b"
 name = "eShipz Estimated Delivery Date"
 handle = "eshipz-estimated-delivery-date"
-application_url = "https://ce-accuracy-theology-uri.trycloudflare.com"
+application_url = "https://demanding-mats-mozambique-algebra.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = ""
 
 [auth]
 redirect_urls = [
-  "https://ce-accuracy-theology-uri.trycloudflare.com/auth/callback",
-  "https://ce-accuracy-theology-uri.trycloudflare.com/auth/shopify/callback",
-  "https://ce-accuracy-theology-uri.trycloudflare.com/api/auth/callback"
+  "https://demanding-mats-mozambique-algebra.trycloudflare.com/auth/callback",
+  "https://demanding-mats-mozambique-algebra.trycloudflare.com/auth/shopify/callback",
+  "https://demanding-mats-mozambique-algebra.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

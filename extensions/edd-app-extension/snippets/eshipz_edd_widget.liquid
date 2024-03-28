@@ -127,12 +127,8 @@
   const config = { childList: true, subtree: true };
   observer.observe(document, config);
 
-  const getDeliveryInfo = async (product_variant_id, origin_ids, origin_names, origin_pincodes) => {
+  const getDeliveryInfo = async (product_variant_id, origin_pincodes) => {
 
-    // console.log('params : ', product_variant_id, origin_ids, origin_names, origin_pincodes);
-
-    origin_ids = origin_ids?.split(',')
-    origin_names = origin_names?.split(',')
     origin_pincodes = origin_pincodes?.split(',')
 
     let resultDiv = document.getElementById("result");
@@ -159,7 +155,7 @@
 
         let headers = new Headers();
         headers.append("Content-Type", "application/json");
-        let body = JSON.stringify({ product_variant_id, destination_pincode, origin_ids, origin_names, origin_pincodes });
+        let body = JSON.stringify({ product_variant_id, destination_pincode, origin_pincodes });
         var requestOptions = { method: 'POST', headers, body, redirect: 'follow' };
         response = await fetch('/apps/eshipz/edd', requestOptions);
         response = await response.json()
