@@ -6,12 +6,13 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:dev.sqlite"
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 model Session {
-  id          String    @id
+  session_id  String @id @default(auto()) @map("_id") @db.ObjectId
+  id          String @unique
   shop        String
   state       String
   isOnline    Boolean   @default(false)
@@ -19,4 +20,46 @@ model Session {
   expires     DateTime?
   accessToken String
   userId      BigInt?
+}
+
+model users {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  store_domain String @unique
+  is_active Boolean @default(false)
+  shopify_access_token String
+  eshipz_user_id String
+  plan String
+  sla_compute_mode String
+  slug String[]
+}
+
+model warehouses {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  eshipz_user_id String
+  name String
+  pincode String
+  closing_time String
+  non_operational_dates DateTime[]
+}
+
+model location_priority {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  eshipz_user_id String
+  delivery_pincode_set Int
+  mother_warehouse String
+  delivery_pincodes String[]
+  pinckup_location_names String[]
+}
+
+model customer_sla {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  vendor_id String
+  service_type String
+  source_pincode String
+  destination_pincode String
+  sla Int
+  unit String
+  eshipz_user_id String
+  is_cod Boolean
+  slug String
 }

@@ -5,6 +5,16 @@ import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
+
+  try {
+    console.log(`${process.env.HOST}/edd`);
+    // let response = await fetch(`${process.env.HOST}/edd`, { method: "POST", redirect: "follow" });
+    // response = await response.json();
+    // console.log('response :', response);
+  } catch (error) {
+    console.log('error :', error);
+  }
+
   return null;
 };
 

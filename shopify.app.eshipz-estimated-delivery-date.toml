@@ -3,7 +3,7 @@
 client_id = "3f58575b4ad9dbda03f6dbcd46d92f0b"
 name = "eShipz Estimated Delivery Date"
 handle = "eshipz-estimated-delivery-date"
-application_url = "https://demanding-mats-mozambique-algebra.trycloudflare.com"
+application_url = "https://accepting-sri-commissions-varies.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,13 +17,23 @@ scopes = ""
 
 [auth]
 redirect_urls = [
-  "https://demanding-mats-mozambique-algebra.trycloudflare.com/auth/callback",
-  "https://demanding-mats-mozambique-algebra.trycloudflare.com/auth/shopify/callback",
-  "https://demanding-mats-mozambique-algebra.trycloudflare.com/api/auth/callback"
+  "https://accepting-sri-commissions-varies.trycloudflare.com/auth/callback",
+  "https://accepting-sri-commissions-varies.trycloudflare.com/auth/shopify/callback",
+  "https://accepting-sri-commissions-varies.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-01"
+
+  [webhooks.privacy_compliance]
+  customer_deletion_url = "https://sync.eshipz.com/home/customer_redact_webhook"
+  customer_data_request_url = "https://sync.eshipz.com/home/customer_data_request_webhook"
+  shop_deletion_url = "https://sync.eshipz.com/home/delete_shop_data"
+
+[app_proxy]
+url = "https://accepting-sri-commissions-varies.trycloudflare.com"
+subpath = "eshipz"
+prefix = "apps"
 
 [pos]
 embedded = false
