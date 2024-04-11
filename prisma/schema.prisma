@@ -48,7 +48,7 @@ model location_priority {
   delivery_pincode_set Int
   mother_warehouse String
   delivery_pincodes String[]
-  pinckup_location_names String[]
+  pickup_location_names String[]
 }
 
 model customer_sla {

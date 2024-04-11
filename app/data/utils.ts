@@ -1,12 +1,12 @@
-export const getFormattedDate = (sla_count: string) => {
+export const getFormattedDate = (days_to_add: number) => {
   let today = new Date();
-  let days_to_add =parseInt(sla_count);
+  // let days_to_add =parseInt(sla_count);
   let resultant_date = new Date(today)
   resultant_date.setDate(resultant_date.getDate() + days_to_add)
   return resultant_date.toISOString().split("T")[0];
 }
 
-export const getPriorityWiseLocations = async (pickup_location_ids: string[], pickup_location_names: string[], pickup_location_pincodes: string[], priority_wise_location_names: string[]) => {
+export const getPriorityWiseLocations = async (pickup_location_ids: string[], pickup_location_names: string[], pickup_location_pincodes: string[], priority_wise_location_names: string[]|undefined) => {
   let pickup_locations = [];
   let m = priority_wise_location_names?.length ?? 0;
   for(let i=0;i<m;i++){
@@ -25,17 +25,11 @@ export const getPriorityWiseLocations = async (pickup_location_ids: string[], pi
   return pickup_locations;
 }
 
-interface warehouseProps{
-  eshipz_user_id: string
-  name: string
-  pincode: string
-  closing_time: string
-  non_operational_dates: Date[]
-}
-
-export const getDelayInDays = ({ closing_time, non_operational_dates }: warehouseProps) => {
+export const getDelayInDays = ( closing_time: string|undefined, non_operational_dates: Date[]|undefined) => {
 
   let dayCounter = 0;
+
+  if(!closing_time || !non_operational_dates) return dayCounter;
 
   // Get current date in server's time zone
   let currentDate = new Date();
@@ -74,4 +68,30 @@ export const checkPincodeServiceability = async (source_pincode: string, destina
     return false;
   }
 
+}
+
+export const getMinMaxExpDelDate = (predictions: any[]) => {
+  const { minExpDelDate, maxExpDelDate } = predictions.reduce((acc, curr) => {
+    if (curr.exp_del_days < acc.minExpDelDays) {
+        acc.minExpDelDays = curr.exp_del_days;
+        acc.minExpDelDate = curr.exp_del_date;
+    }
+    if (curr.exp_del_days > acc.maxExpDelDays) {
+        acc.maxExpDelDays = curr.exp_del_days;
+        acc.maxExpDelDate = curr.exp_del_date;
+    }
+    return acc;
+}, { minExpDelDays: Infinity, maxExpDelDays: -Infinity , minExpDelDate: null, maxExpDelDate: null});
+
+return { minExpDelDate, maxExpDelDate };
+}
+
+export const getSourcePincode = (inventory_levels: any[], pickup_locations: any[]) => {
+  let n = pickup_locations?.length;
+  if(n > 0)
+      for(let i = 0; i < n; i++){
+          let inventory = inventory_levels.find(item => item.location_id === pickup_locations[i]?.id);
+          if(inventory?.available > 0) return pickup_locations[i]?.pincode?.toString();
+      }
+  return null;
 }

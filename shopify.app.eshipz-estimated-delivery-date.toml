@@ -3,7 +3,7 @@
 client_id = "3f58575b4ad9dbda03f6dbcd46d92f0b"
 name = "eShipz Estimated Delivery Date"
 handle = "eshipz-estimated-delivery-date"
-application_url = "https://accepting-sri-commissions-varies.trycloudflare.com"
+application_url = "https://predict-edd-test.onrender.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = ""
 
 [auth]
 redirect_urls = [
-  "https://accepting-sri-commissions-varies.trycloudflare.com/auth/callback",
-  "https://accepting-sri-commissions-varies.trycloudflare.com/auth/shopify/callback",
-  "https://accepting-sri-commissions-varies.trycloudflare.com/api/auth/callback"
+  "https://predict-edd-test.onrender.com/auth/callback",
+  "https://predict-edd-test.onrender.com/auth/shopify/callback",
+  "https://predict-edd-test.onrender.com/api/auth/callback"
 ]
 
 [webhooks]
@@ -31,7 +31,7 @@ api_version = "2024-01"
   shop_deletion_url = "https://sync.eshipz.com/home/delete_shop_data"
 
 [app_proxy]
-url = "https://accepting-sri-commissions-varies.trycloudflare.com"
+url = "https://predict-edd-test.onrender.com"
 subpath = "eshipz"
 prefix = "apps"
 

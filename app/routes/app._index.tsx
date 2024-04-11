@@ -2,19 +2,16 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 import { Page, Layout, Text, Card, BlockStack, MediaCard, VideoThumbnail, ExceptionList } from "@shopify/polaris";
 import {NoteIcon} from '@shopify/polaris-icons';
 import { authenticate } from "../shopify.server";
+import { getEDDStats } from "~/data/api";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
+
   await authenticate.admin(request);
-
-  try {
-    console.log(`${process.env.HOST}/edd`);
-    // let response = await fetch(`${process.env.HOST}/edd`, { method: "POST", redirect: "follow" });
-    // response = await response.json();
-    // console.log('response :', response);
-  } catch (error) {
-    console.log('error :', error);
-  }
-
+  let url = new URL(request.url);
+  let store_url = url.searchParams.get('shop') ?? '';
+  let payload = { product_variant_id:"42443883282623", destination_pincode:"641005", origin_pincodes: ["641001"] }
+  let response = await getEDDStats(payload, store_url);
+  console.log('response :', response);
   return null;
 };
 
